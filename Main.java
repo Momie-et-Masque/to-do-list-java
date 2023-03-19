@@ -10,7 +10,7 @@ public class Main {
   static String input;
   static String[] splitInput;
   
-    // Color constants
+  // Color constants
   static final String RESET = "\u001B[0m";
   static final String RED = "\u001B[31m";
   static final String GREEN = "\u001B[32m";
