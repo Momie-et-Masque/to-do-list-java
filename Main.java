@@ -1,5 +1,13 @@
 import java.util.ArrayList; // Import the ArrayList class for dynamically resizable lists
 import java.util.Scanner;  // Import the Scanner class for user input
+import java.io.File;  // Import the File class for file handling
+import java.io.FileWriter;   // Import the FileWriter class for file writing
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import java.io.IOException;  // Import the IOException class to handle errors
 
 public class Main {
   static Scanner userInput = new Scanner(System.in); // module for user input
@@ -9,7 +17,8 @@ public class Main {
   static ArrayList<Boolean> important = new ArrayList<Boolean>();  
   static String input;
   static String[] splitInput;
-  
+  static String currentFilename = "todo";
+
   // Color constants
   static final String RESET = "\u001B[0m";
   static final String RED = "\u001B[31m";
@@ -21,9 +30,14 @@ public class Main {
   static final String WHITE = "\u001B[37m";
   
   public static void main(String[] args) {
+    if (args.length > 0) {
+      currentFilename = args[0];
+    }
+    loadList(currentFilename);
     while (true) {
       System.out.print("\033[H\033[2J"); // cls
       System.out.println("###################\n#                 #\n#  MY TO-DO LIST  #\n#                 #\n###################\n"); // stylized title 
+      System.out.println("List : " + currentFilename);
       for (int i = 0; i < tasks.size(); i++) {
         if (important.get(i)) {
           System.out.print(RED);
@@ -63,6 +77,12 @@ public class Main {
             case "/clear":
               clearTasks();
               break;
+             case "/save":
+              saveList(lastArg(1));
+              break;
+            case "/load":
+              loadList(lastArg(1));
+              break;
             default:
               appendTask(input);
           }
@@ -72,6 +92,7 @@ public class Main {
       } else {
         appendTask(input);
       }
+      saveList(currentFilename);
     }
   }
   
@@ -117,12 +138,93 @@ public class Main {
     done.clear();
     important.clear();
   }
-  
+
+  static void saveList(String filename) {
+    currentFilename = filename;
+    saveData(currentFilename, convertStringArrayListToString(tasks));
+    saveData(currentFilename + "_done", convertBooleanArrayListToString(done));
+    saveData(currentFilename + "_important", convertBooleanArrayListToString(important));
+  }
+
+  static void loadList(String filename) {
+    currentFilename = filename;
+    tasks = convertStringToStringArrayList(loadData(currentFilename));
+    done = convertStringToBooleanArrayList(loadData(currentFilename + "_done"));
+    important = convertStringToBooleanArrayList(loadData(currentFilename + "_important"));
+  }
+
+  // get the last user command argument, which may contain spaces, from its index
   static String lastArg(int index) {
     int startIndex = 0;
     for (int i = 0; i < index; i++) {
       startIndex += splitInput[i].length() + 1;
     }
     return input.substring(startIndex);
+  }
+  
+  static void saveData(String filename, String data) {
+    try {
+      File dataFile = new File(filename + ".txt");
+      dataFile.createNewFile();
+      FileWriter myWriter = new FileWriter(filename + ".txt");
+      myWriter.write(data);
+      myWriter.close();
+    } catch (IOException e) {
+      System.out.println("An error occurred.");
+      e.printStackTrace();
+    }
+  }
+
+  static String loadData(String filename) {
+      String content = "";
+      try {
+          Path path = Paths.get(filename + ".txt");
+          content = Files.readString(path);
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
+      return content;
+  }
+
+  static ArrayList<String> convertStringToStringArrayList(String input) {
+    String[] lines = input.split("\n");
+    ArrayList<String> list = new ArrayList<>();
+    for (String line : lines) {
+      list.add(line);
+    }
+    return list;
+  }
+
+  static ArrayList<Boolean> convertStringToBooleanArrayList(String input) {
+    String[] lines = input.split("\n");
+    ArrayList<Boolean> list = new ArrayList<>();
+    for (String line : lines) {
+      list.add(Boolean.parseBoolean(line));
+    }
+    return list;
+  }
+
+  static String convertStringArrayListToString(ArrayList<String> list) {
+    StringBuilder sb = new StringBuilder();
+    for (String item : list) {
+      sb.append(item).append("\n");
+    }
+    // Remove the last line break if needed
+    if (!list.isEmpty()) {
+      sb.setLength(sb.length() - 1);
+    }
+    return sb.toString();
+  }
+  
+  static String convertBooleanArrayListToString(ArrayList<Boolean> list) {
+    StringBuilder sb = new StringBuilder();
+    for (Boolean item : list) {
+      sb.append(item).append("\n");
+    }
+    // Remove the last line break if needed
+    if (!list.isEmpty()) {
+      sb.setLength(sb.length() - 1);
+    }
+    return sb.toString();
   }
 }
