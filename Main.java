@@ -78,10 +78,10 @@ public class Main {
               clearTasks();
               break;
              case "/save":
-              saveList(lastArg(1));
+              saveList(lastArg(1).replace("_", "-"));
               break;
             case "/load":
-              loadList(lastArg(1));
+              loadList(lastArg(1).replace("_", "-"));
               break;
             default:
               appendTask(input);

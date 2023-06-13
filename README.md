@@ -18,3 +18,4 @@ Commands :
 Note : indexes in commands start from 1.
 
 You can also directly open a list by passing its name as an argument at launch.
+List names cannot contain underscores `_` ; hyphens `-` will be used instead.
