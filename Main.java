@@ -28,29 +28,32 @@ public class Main {
   static final String MAGENTA = "\u001B[35m";
   static final String CYAN = "\u001B[36m";
   static final String WHITE = "\u001B[37m";
-  
+  static final String BOLD = "\u001B[1m";
+  static final String CROSSED_OUT = "\u001B[9m";
+  static final String CLS = "\033[H\033[2J";
   public static void main(String[] args) {
     if (args.length > 0) {
       currentFilename = args[0];
     }
     loadList(currentFilename);
     while (true) {
-      System.out.print("\033[H\033[2J"); // cls
+      System.out.print(CLS);
       System.out.println("###################\n#                 #\n#  MY TO-DO LIST  #\n#                 #\n###################\n"); // stylized title 
       System.out.println("List : " + currentFilename);
       for (int i = 0; i < tasks.size(); i++) {
+        if (done.get(i)) {
+          System.out.print("[X] " + CROSSED_OUT);
+        } else {
+          System.out.print("[ ] " + BOLD);
+        }
         if (important.get(i)) {
           System.out.print(RED);
         }
-        if (done.get(i)) {
-          System.out.print("[X] " + tasks.get(i));
-        } else {
-          System.out.print("[ ] " + tasks.get(i));
-        }
-        System.out.println(RESET);
+        System.out.println(tasks.get(i) + RESET);
       }
       
-      input = userInput.nextLine(); // Read user imput
+      System.out.print(" >  ");
+      input = userInput.nextLine(); // Get user imput
       
       if (input.startsWith("/")){
         try {
@@ -87,6 +90,7 @@ public class Main {
               printHelp();
               break;
             case "/exit":
+              System.out.print(CLS);
               System.exit(0);
               break;
             default:
