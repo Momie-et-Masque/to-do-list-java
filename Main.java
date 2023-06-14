@@ -50,7 +50,7 @@ public class Main {
         System.out.println(RESET);
       }
       
-      input = userInput.nextLine( ); // Read user imput
+      input = userInput.nextLine(); // Read user imput
       
       if (input.startsWith("/")){
         try {
@@ -82,6 +82,12 @@ public class Main {
               break;
             case "/load":
               loadList(lastArg(1).replace("_", "-"));
+              break;
+            case "/help":
+              printHelp();
+              break;
+            case "/exit":
+              System.exit(0);
               break;
             default:
               appendTask(input);
@@ -153,6 +159,23 @@ public class Main {
     important = convertStringToBooleanArrayList(loadData(currentFilename + "_important"));
   }
 
+  static void printHelp() {
+    System.out.println("HELP :\nYou can type a new task to add it to the list, or type a command :");
+    System.out.println("/add <task> - Add a new task");
+    System.out.println("/insert <index> <task> - Insert a new task at a given index");
+    System.out.println("/del <index> - Delete a task at a given index");
+    System.out.println("/edit <index> <task> - Edit a task at a given index");
+    System.out.println("/done <index> - Mark a task as done");
+    System.out.println("/! <index> - Mark a task as important");
+    System.out.println("/clear - Clear all tasks");
+    System.out.println("/save <filename> - Save the current list to a file");
+    System.out.println("/load <filename> - Load a list from a file");
+    System.out.println("/? - Print this help");
+    System.out.println("/exit - Exit the program");
+    System.out.println("\nPress enter to close this help");
+    userInput.nextLine();
+  }
+
   // get the last user command argument, which may contain spaces, from its index
   static String lastArg(int index) {
     int startIndex = 0;
@@ -189,8 +212,10 @@ public class Main {
   static ArrayList<String> convertStringToStringArrayList(String input) {
     String[] lines = input.split("\n");
     ArrayList<String> list = new ArrayList<>();
-    for (String line : lines) {
-      list.add(line);
+    if (lines.length > 1 || lines[0] != "") {
+      for (String line : lines) {
+        list.add(line);
+      }
     }
     return list;
   }
@@ -198,8 +223,10 @@ public class Main {
   static ArrayList<Boolean> convertStringToBooleanArrayList(String input) {
     String[] lines = input.split("\n");
     ArrayList<Boolean> list = new ArrayList<>();
-    for (String line : lines) {
-      list.add(Boolean.parseBoolean(line));
+    if (lines.length > 1 || lines[0] != "") {
+      for (String line : lines) {
+        list.add(Boolean.parseBoolean(line));
+      }
     }
     return list;
   }
