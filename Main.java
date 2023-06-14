@@ -192,10 +192,14 @@ public class Main {
   static void saveData(String filename, String data) {
     try {
       File dataFile = new File(filename + ".txt");
-      dataFile.createNewFile();
-      FileWriter myWriter = new FileWriter(filename + ".txt");
-      myWriter.write(data);
-      myWriter.close();
+      if (data == "") {
+        dataFile.delete();
+      } else {
+        dataFile.createNewFile();
+        FileWriter myWriter = new FileWriter(filename + ".txt");
+        myWriter.write(data);
+        myWriter.close();
+      }
     } catch (IOException e) {
       System.out.println("An error occurred.");
       e.printStackTrace();
