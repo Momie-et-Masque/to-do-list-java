@@ -30,6 +30,7 @@ public class Main {
   static final String WHITE = "\u001B[37m";
   
   public static void main(String[] args) {
+    splashScreen();
     if (args.length > 0) {
       currentFilename = args[0];
     }
@@ -96,6 +97,17 @@ public class Main {
     }
   }
   
+  static void splashScreen() {
+    System.out.print("\033[H\033[2J"); // cls
+    System.out.println("###################\n#                 #\n#  MY TO-DO LIST  #\n#                 #\n###################\n"); // stylized title 
+    System.out.println("Momie_et_Masque first Java project !");
+    try {
+      Thread.sleep(3000);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+  }
+
   static void appendTask(String task) {
     tasks.add(task);
     done.add(false);
