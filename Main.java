@@ -93,12 +93,12 @@ public class Main {
             case "/help":
               printHelp();
               break;
+            case "/lists":
+              printLists();
+              break;
             case "/exit":
               System.out.print(CLS);
               System.exit(0);
-              break;
-            case "/lists":
-              printLists();
               break;
             default:
               appendTask(input);
@@ -201,7 +201,7 @@ public class Main {
     System.out.println("/clear - Clear all tasks");
     System.out.println("/save <filename> - Save the current list to a file");
     System.out.println("/load <filename> - Load a list from a file");
-    System.out.println("/? - Print this help");
+    System.out.println("/help - Print this help");
     System.out.println("/lists - Print existing to-do lists names");
     System.out.println("/exit - Exit the program");
     System.out.println("\nPress enter to close this help");
@@ -237,10 +237,7 @@ public class Main {
         myWriter.write(data);
         myWriter.close();
       }
-    } catch (IOException e) {
-      System.out.println("An error occurred.");
-      e.printStackTrace();
-    }
+    } catch (IOException e) {}
   }
 
   static String loadData(String filename) {
@@ -248,9 +245,7 @@ public class Main {
       try {
           Path path = Paths.get(filename + ".txt");
           content = Files.readString(path);
-      } catch (IOException e) {
-          e.printStackTrace();
-      }
+      } catch (IOException e) {}
       return content;
   }
 
