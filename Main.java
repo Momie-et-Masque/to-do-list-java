@@ -13,8 +13,9 @@ public class Main {
   static Scanner userInput = new Scanner(System.in); // module for user input
   
   static ArrayList<String> tasks = new ArrayList<String>();
-  static ArrayList<Boolean> done = new ArrayList<Boolean>();  
-  static ArrayList<Boolean> important = new ArrayList<Boolean>();  
+  static ArrayList<Boolean> done = new ArrayList<Boolean>();
+  static ArrayList<Boolean> important = new ArrayList<Boolean>();
+  static ArrayList<String> lists = new ArrayList<String>();
   static String input;
   static String[] splitInput;
   static String currentFilename = "todo";
@@ -31,11 +32,13 @@ public class Main {
   static final String BOLD = "\u001B[1m";
   static final String CROSSED_OUT = "\u001B[9m";
   static final String CLS = "\033[H\033[2J";
+
   public static void main(String[] args) {
     splashScreen();
     if (args.length > 0) {
       currentFilename = args[0];
     }
+    lists = convertStringToStringArrayList(loadData("_lists"));
     loadList(currentFilename);
     while (true) {
       System.out.print(CLS);
@@ -94,6 +97,9 @@ public class Main {
               System.out.print(CLS);
               System.exit(0);
               break;
+            case "/lists":
+              printLists();
+              break;
             default:
               appendTask(input);
           }
@@ -110,7 +116,7 @@ public class Main {
   static void splashScreen() {
     System.out.print("\033[H\033[2J"); // cls
     System.out.println("###################\n#                 #\n#  MY TO-DO LIST  #\n#                 #\n###################\n"); // stylized title 
-    System.out.println("Momie_et_Masque first Java project !");
+    System.out.println("Momie_et_Masque first Java project !\nType /help to get help.");
     try {
       Thread.sleep(3000);
     } catch (InterruptedException e) {
@@ -163,9 +169,18 @@ public class Main {
 
   static void saveList(String filename) {
     currentFilename = filename;
-    saveData(currentFilename, convertStringArrayListToString(tasks));
+    String tasksString = convertStringArrayListToString(tasks);
+    saveData(currentFilename, tasksString);
     saveData(currentFilename + "_done", convertBooleanArrayListToString(done));
     saveData(currentFilename + "_important", convertBooleanArrayListToString(important));
+    if (!lists.contains(currentFilename)) {
+      lists.add(currentFilename);
+      saveData("_lists", convertStringArrayListToString(lists));
+    }
+    if (tasksString == "") {
+      lists.remove(lists.indexOf(currentFilename));
+      saveData("_lists", convertStringArrayListToString(lists));
+    }
   }
 
   static void loadList(String filename) {
@@ -176,7 +191,7 @@ public class Main {
   }
 
   static void printHelp() {
-    System.out.println("HELP :\nYou can type a new task to add it to the list, or type a command :");
+    System.out.println("\nHELP :\nYou can type a new task to add it to the list, or type a command :");
     System.out.println("/add <task> - Add a new task");
     System.out.println("/insert <index> <task> - Insert a new task at a given index");
     System.out.println("/del <index> - Delete a task at a given index");
@@ -187,8 +202,18 @@ public class Main {
     System.out.println("/save <filename> - Save the current list to a file");
     System.out.println("/load <filename> - Load a list from a file");
     System.out.println("/? - Print this help");
+    System.out.println("/lists - Print existing to-do lists names");
     System.out.println("/exit - Exit the program");
     System.out.println("\nPress enter to close this help");
+    userInput.nextLine();
+  }
+
+  static void printLists() {
+    System.out.println("\nTO-DO LISTS :\n");
+    for (String list : lists) {
+      System.out.println(list);
+    }
+    System.out.println("\nPress enter to close this listing");
     userInput.nextLine();
   }
 
@@ -227,6 +252,10 @@ public class Main {
           e.printStackTrace();
       }
       return content;
+  }
+
+  static void getLists() {
+    lists = convertStringToStringArrayList(loadData("_lists"));
   }
 
   static ArrayList<String> convertStringToStringArrayList(String input) {

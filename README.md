@@ -14,6 +14,7 @@ Commands :
 - `/clear` : clears the entire list
 - `/save {listname}` : saves the current list of task with their properties to a list of the given name ; each time you change the current list, changes will be saved ; the default list at program launch is `todo`
 - `/load {listname}` : opens the list with the specified name, and sets it as the current list
+- `/help` : prints help, with instructions and commands
 
 Note : indexes in commands start from 1.
 
