@@ -1,16 +1,15 @@
 import java.util.ArrayList; // Import the ArrayList class for dynamically resizable lists
-import java.util.Scanner;  // Import the Scanner class for user input
-import java.io.File;  // Import the File class for file handling
-import java.io.FileWriter;   // Import the FileWriter class for file writing
+import java.util.Scanner; // Import the Scanner class for user input
+import java.io.File; // Import the File class for file handling
+import java.io.FileWriter; // Import the FileWriter class for file writing
+import java.io.IOException;  // Import the IOException class to handle input/output errors
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import java.io.IOException;  // Import the IOException class to handle errors
-
 public class Main {
-  static Scanner userInput = new Scanner(System.in); // module for user input
+  static Scanner inputScanner = new Scanner(System.in); // module for user input
   
   static ArrayList<String> tasks = new ArrayList<String>();
   static ArrayList<Boolean> done = new ArrayList<Boolean>();
@@ -33,88 +32,25 @@ public class Main {
   static final String CROSSED_OUT = "\u001B[9m";
   static final String CLS = "\033[H\033[2J";
 
+  // LEVEL 0
+
   public static void main(String[] args) {
     splashScreen();
-    if (args.length > 0) {
-      currentFilename = args[0];
-    }
+    decodeCommandLineArguments(args);
     lists = convertStringToStringArrayList(loadData("_lists"));
     loadList(currentFilename);
     while (true) {
-      System.out.print(CLS);
-      System.out.println("###################\n#                 #\n#  MY TO-DO LIST  #\n#                 #\n###################\n"); // stylized title 
-      System.out.println("List : " + currentFilename);
-      for (int i = 0; i < tasks.size(); i++) {
-        if (done.get(i)) {
-          System.out.print("[X] " + CROSSED_OUT);
-        } else {
-          System.out.print("[ ] " + BOLD);
-        }
-        if (important.get(i)) {
-          System.out.print(RED);
-        }
-        System.out.println(tasks.get(i) + RESET);
-      }
-      
-      System.out.print(" >  ");
-      input = userInput.nextLine(); // Get user imput
-      
-      if (input.startsWith("/")){
-        try {
-          splitInput = input.split(" ");
-          switch (splitInput[0]) {
-            case "/add":
-              appendTask(lastArg(1));
-              break;
-            case "/insert":
-              insertTask(splitInput[1], lastArg(2));
-              break;
-            case "/del":
-              deleteTask(splitInput[1]);
-              break;
-            case "/edit":
-              editTask(splitInput[1], lastArg(2));
-              break;
-            case "/done":
-              doneTask(splitInput[1]);
-              break;
-            case "/!":
-              importantTask(splitInput[1]);
-              break;
-            case "/clear":
-              clearTasks();
-              break;
-             case "/save":
-              saveList(lastArg(1).replace("_", "-"));
-              break;
-            case "/load":
-              loadList(lastArg(1).replace("_", "-"));
-              break;
-            case "/help":
-              printHelp();
-              break;
-            case "/lists":
-              printLists();
-              break;
-            case "/exit":
-              System.out.print(CLS);
-              System.exit(0);
-              break;
-            default:
-              appendTask(input);
-          }
-        } catch (Exception e) {
-          appendTask(input);
-        }
-      } else {
-        appendTask(input);
-      }
+      AsciiUi();
+      input = inputScanner.nextLine(); // Get user imput
+      processInput(input);
       saveList(currentFilename);
     }
   }
-  
+
+  // LEVEL 1
+
   static void splashScreen() {
-    System.out.print("\033[H\033[2J"); // cls
+    System.out.print(CLS);
     System.out.println("###################\n#                 #\n#  MY TO-DO LIST  #\n#                 #\n###################\n"); // stylized title 
     System.out.println("Momie_et_Masque first Java project !\nType /help to get help.");
     try {
@@ -122,6 +58,101 @@ public class Main {
     } catch (InterruptedException e) {
         e.printStackTrace();
     }
+  }
+  
+  static void decodeCommandLineArguments(String[] args) {
+    if (args.length > 0) {
+      currentFilename = args[0];
+    }
+  }
+
+  static void AsciiUi() {
+    System.out.print(CLS);
+    System.out.println("###################\n#                 #\n#  MY TO-DO LIST  #\n#                 #\n###################\n"); // stylized title 
+    System.out.println("List : " + currentFilename);
+    for (int i = 0; i < tasks.size(); i++) {
+      if (done.get(i)) {
+        System.out.print("[X] " + CROSSED_OUT);
+      } else {
+        System.out.print("[ ] " + BOLD);
+      }
+      if (important.get(i)) {
+        System.out.print(RED);
+      }
+      System.out.println(tasks.get(i) + RESET);
+    }
+    System.out.print(" >  ");
+  }
+
+  // LEVEL 2
+
+  static void processInput(String input) {
+    if (input.startsWith("/")){
+      try {
+        processInputCommand(input);
+      } catch (Exception e) {
+        appendTask(input);
+      }
+    } else {
+      appendTask(input);
+    }
+  }
+
+  // LEVEL 3
+
+  static void processInputCommand(String input) {
+    splitInput = input.split(" ");
+    switch (splitInput[0]) {
+      case "/add":
+        appendTask(lastArg(1));
+        break;
+      case "/insert":
+        insertTask(splitInput[1], lastArg(2));
+        break;
+      case "/del":
+        deleteTask(splitInput[1]);
+        break;
+      case "/edit":
+        editTask(splitInput[1], lastArg(2));
+        break;
+      case "/done":
+        doneTask(splitInput[1]);
+        break;
+      case "/!":
+        importantTask(splitInput[1]);
+        break;
+      case "/clear":
+        clearTasks();
+        break;
+        case "/save":
+        saveList(lastArg(1).replace("_", "-"));
+        break;
+      case "/load":
+        loadList(lastArg(1).replace("_", "-"));
+        break;
+      case "/help":
+        printHelp();
+        break;
+      case "/lists":
+        printLists();
+        break;
+      case "/exit":
+        exitProgram();
+        break;
+      default:
+        appendTask(input);
+    }
+  }
+
+  // LEVEL 4
+
+  // get the last user command argument, which may contain spaces, from its index
+  static String lastArg(int index) {
+    int startIndex = 0;
+    for (int i = 0; i < index; i++) {
+      startIndex += splitInput[i].length() + 1;
+    }
+    return input.substring(startIndex);
   }
 
   static void appendTask(String task) {
@@ -205,7 +236,7 @@ public class Main {
     System.out.println("/lists - Print existing to-do lists names");
     System.out.println("/exit - Exit the program");
     System.out.println("\nPress enter to close this help");
-    userInput.nextLine();
+    inputScanner.nextLine();
   }
 
   static void printLists() {
@@ -214,17 +245,15 @@ public class Main {
       System.out.println(list);
     }
     System.out.println("\nPress enter to close this listing");
-    userInput.nextLine();
+    inputScanner.nextLine();
   }
 
-  // get the last user command argument, which may contain spaces, from its index
-  static String lastArg(int index) {
-    int startIndex = 0;
-    for (int i = 0; i < index; i++) {
-      startIndex += splitInput[i].length() + 1;
-    }
-    return input.substring(startIndex);
+  static void exitProgram() {
+    System.out.print(CLS);
+    System.exit(0);
   }
+  
+  // LEVEL 5
   
   static void saveData(String filename, String data) {
     try {
@@ -241,16 +270,12 @@ public class Main {
   }
 
   static String loadData(String filename) {
-      String content = "";
-      try {
-          Path path = Paths.get(filename + ".txt");
-          content = Files.readString(path);
-      } catch (IOException e) {}
-      return content;
-  }
-
-  static void getLists() {
-    lists = convertStringToStringArrayList(loadData("_lists"));
+    String content = "";
+    try {
+      Path path = Paths.get(filename + ".txt");
+        content = Files.readString(path);
+    } catch (IOException e) {}
+    return content;
   }
 
   static ArrayList<String> convertStringToStringArrayList(String input) {
