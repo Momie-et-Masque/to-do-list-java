@@ -1,4 +1,5 @@
 import java.util.ArrayList; // Import the ArrayList class for dynamically resizable lists
+import java.util.Arrays;
 import java.util.Scanner;  // Import the Scanner class for user input
 import java.io.File;  // Import the File class for file handling
 import java.io.FileWriter;   // Import the FileWriter class for file writing
@@ -20,6 +21,8 @@ public class Main {
   static String[] splitInput;
   static String currentFilename = "todo";
 
+  public static Boolean gui = false;
+
   // Color constants
   static final String RESET = "\u001B[0m";
   static final String RED = "\u001B[31m";
@@ -35,7 +38,10 @@ public class Main {
 
   public static void main(String[] args) {
     splashScreen();
-    if (args.length > 0) {
+    if (Arrays.asList(args).contains("--gui")) {
+      gui = true;
+    }
+    if (args.length > 0 && !args[0].startsWith("--")) {
       currentFilename = args[0];
     }
     lists = convertStringToStringArrayList(loadData("_lists"));
