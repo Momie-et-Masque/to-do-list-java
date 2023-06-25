@@ -20,8 +20,7 @@ public class Main {
   static String input;
   static String[] splitInput;
   static String currentFilename = "todo";
-
-  public static Boolean gui = false;
+  static Boolean gui = false;
 
   // Color constants
   static final String RESET = "\u001B[0m";
