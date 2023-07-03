@@ -71,6 +71,7 @@ public class Main {
     System.out.println("###################\n#                 #\n#  MY TO-DO LIST  #\n#                 #\n###################\n"); // stylized title 
     System.out.println("List : " + currentFilename);
     for (int i = 0; i < tasks.size(); i++) {
+      System.out.print(i + 1 + " ");
       if (done.get(i)) {
         System.out.print("[X] " + CROSSED_OUT);
       } else {
@@ -81,7 +82,7 @@ public class Main {
       }
       System.out.println(tasks.get(i) + RESET);
     }
-    System.out.print(" >  ");
+    System.out.print("\n >  ");
   }
 
   // LEVEL 2
